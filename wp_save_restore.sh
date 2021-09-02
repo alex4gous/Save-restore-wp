@@ -4,10 +4,15 @@
 #	Date: 2021-09-02
 #	Version: 1.0
 #
-#	https://github.com/alex4gous
+#	https://github.com/alex4gous/Save-restore-wp
 #
 #	License: MIT
 #-----------------------------------------------
+
+# vérifier si le paquet LFTP est présent
+
+FTP_USER="serveurftp"
+FTP_PASS="serveurftp"
 
 usage()
 {
@@ -41,14 +46,20 @@ fi
 ### Les fonctions
 ###
 
+timestamp=`date +"%s"`
+nom_du_fichier_de_sauvegarde="sauvegarde"$timestamp
+
 Sauvegarde()
 {
-	echo "Sauvegarde"
+	cd /root/
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /root/
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /root/$nom_du_fichier_de_sauvegarde.tar"
+	rm /root/$nom_du_fichier_de_sauvegarde.tar
 }
 
 Restoration()
 {
-	echo "Restoration"
+	echo "Restoration from $serveurftp"
 }
 
 ###
