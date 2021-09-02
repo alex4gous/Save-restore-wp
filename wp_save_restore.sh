@@ -23,10 +23,9 @@ if [ "$1" == "--help" ]; then
     usage; exit 0
 fi
 
-while getopts 2:W:C:w:c:u:p:h:iUv OPTNAME; do # A MODIFIER
+while getopts f:rs OPTNAME; do # A MODIFIER
         case "$OPTNAME" in
-		f)	serveurftp="$OPTARG";;
-		h)	usage;;
+	f)	serveurftp="$OPTARG";;
         r)	restore="yes";;
         s)	save="yes";;
         *)	usage;;
@@ -34,10 +33,9 @@ while getopts 2:W:C:w:c:u:p:h:iUv OPTNAME; do # A MODIFIER
 done
 
 # On vérifie qu'est ce qui est mis en paramètre
-if [ "serveurftp" = "" ] ; then
+if [ "$serveurftp" = "" ] ; then
 	usage
-else
-	echo "Hello"
+fi
 
 ###
 ### Les fonctions
@@ -56,11 +54,13 @@ Restoration()
 ###
 ### Application - SAUVEGARDE
 ###
-if [ "save" = "yes" ] ; then
+if [ "$save" = "yes" ] ; then
 	Sauvegarde
+fi
 
 ###
 ### Application - RESTORE
 ###
-if [ "restore" = "yes" ] ; then
+if [ "$restore" = "yes" ] ; then
 	Restoration
+fi
