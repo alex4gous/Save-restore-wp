@@ -46,8 +46,11 @@ fi
 ### Les fonctions
 ###
 
-timestamp=`date +"%s"`
-nom_du_fichier_de_sauvegarde="sauvegarde"$timestamp
+#timestamp=`date +"%s"`
+nom_du_fichier_de_sauvegarde="sauvegarde-1" #$timestamp
+#timemaxsave=$((timestamp-3600))
+#echo $timemaxsave
+
 
 Sauvegarde()
 {
@@ -57,15 +60,24 @@ Sauvegarde()
 	rm /root/$nom_du_fichier_de_sauvegarde.tar
 }
 
+Rotation_des_Sauvegardes()
+{
+	#On supprime le 3, on rename le 2->3, puis on rename le 1->2 (pour préparer l arrivé du 1)
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; rm /home/serveurftp/sauvegarde-3.tar"
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; mv /home/serveurftp/sauvegarde-2.tar /home/serveurftp/sauvegarde-3.tar"
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; mv /home/serveurftp/sauvegarde-1.tar /home/serveurftp/sauvegarde-2.tar"
+}
+
 Restoration()
 {
-	echo "Restoration from $serveurftp"
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
 }
 
 ###
 ### Application - SAUVEGARDE
 ###
 if [ "$save" = "yes" ] ; then
+	Rotation_des_Sauvegardes
 	Sauvegarde
 fi
 
