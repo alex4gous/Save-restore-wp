@@ -46,16 +46,17 @@ fi
 ### Les fonctions
 ###
 
-#timestamp=`date +"%s"`
-nom_du_fichier_de_sauvegarde="sauvegarde-1" #$timestamp
-#timemaxsave=$((timestamp-3600))
-#echo $timemaxsave
-
+nom_du_fichier_de_sauvegarde="sauvegarde-1"
 
 Sauvegarde()
 {
+	# On se déplace dans /root/ (notre dossier)
+	# On zip les fichiers/dossiers voulu
+	# On l'envoi sur le serveur ftp
+	# On supprime le fichier temporaire
+	# MYSQLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
 	cd /root/
-	tar -zcf $nom_du_fichier_de_sauvegarde.tar /root/
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /root/ #et le fichier mysql
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /root/$nom_du_fichier_de_sauvegarde.tar"
 	rm /root/$nom_du_fichier_de_sauvegarde.tar
 }
@@ -71,6 +72,8 @@ Rotation_des_Sauvegardes()
 Restoration()
 {
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
+	#on cp les fichiers
+	#on cp mysql
 }
 
 ###
