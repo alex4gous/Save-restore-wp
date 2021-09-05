@@ -28,7 +28,7 @@ if [ "$1" == "--help" ]; then
     usage; exit 0
 fi
 
-while getopts f:rs OPTNAME; do # A MODIFIER
+while getopts f:rs OPTNAME; do
         case "$OPTNAME" in
 	f)	serveurftp="$OPTARG";;
         r)	restore="yes";;
@@ -42,23 +42,36 @@ if [ "$serveurftp" = "" ] ; then
 	usage
 fi
 
+# On vérifie que le paquet LFTP est installé
+
 ###
 ### Les fonctions
 ###
+
+Installation_paquet()
+{
+	REQUIRED_PKG="$1"
+	PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+	# echo Checking for $REQUIRED_PKG: $PKG_OK
+	if [ "" = "$PKG_OK" ]; then
+		echo "$REQUIRED_PKG non installé. Setting up $REQUIRED_PKG."
+		apt-get --yes -qq install $REQUIRED_PKG
+	fi
+}
 
 nom_du_fichier_de_sauvegarde="sauvegarde-1"
 
 Sauvegarde()
 {
-	# On se déplace dans /root/ (notre dossier)
+	# On se déplace dans /tmp/
 	# On zip les fichiers/dossiers voulu
 	# On l'envoi sur le serveur ftp
 	# On supprime le fichier temporaire
 	# MYSQLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
-	cd /root/
-	tar -zcf $nom_du_fichier_de_sauvegarde.tar /root/ #et le fichier mysql
-	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /root/$nom_du_fichier_de_sauvegarde.tar"
-	rm /root/$nom_du_fichier_de_sauvegarde.tar
+	cd /tmp/
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /tmp/ #et le fichier mysql A MODIFIER
+	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /tmp/$nom_du_fichier_de_sauvegarde.tar"
+	rm /tmp/$nom_du_fichier_de_sauvegarde.tar
 }
 
 Rotation_des_Sauvegardes()
@@ -72,9 +85,18 @@ Rotation_des_Sauvegardes()
 Restoration()
 {
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
+	mv sauvegarde-1.tar /tmp/sauvegarde-1.tar
+	tar xzf /tmp/sauvegarde-1.tar -C /tmp/
+	cp -r /tmp/ /root/tmp/
 	#on cp les fichiers
 	#on cp mysql
 }
+
+###
+### Préparation
+###
+
+Installation_paquet lftp
 
 ###
 ### Application - SAUVEGARDE
