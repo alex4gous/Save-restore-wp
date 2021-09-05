@@ -9,7 +9,7 @@
 #	License: MIT
 #-----------------------------------------------
 
-# vérifier si le paquet LFTP est présent
+# vérifier si on est root
 
 FTP_USER="serveurftp"
 FTP_PASS="serveurftp"
@@ -37,15 +37,19 @@ while getopts f:rs OPTNAME; do
         esac
 done
 
+# On vérifie qu'on est root
+if [ "$EUID" -ne 0 ]
+  then echo "Vous devez etre root pour lancer le script"
+  exit
+fi
+
 # On vérifie qu'est ce qui est mis en paramètre
 if [ "$serveurftp" = "" ] ; then
 	usage
 fi
 
-# On vérifie que le paquet LFTP est installé
-
 ###
-### Les fonctions
+### Les fonctions et variables
 ###
 
 Installation_paquet()
@@ -67,9 +71,10 @@ Sauvegarde()
 	# On zip les fichiers/dossiers voulu
 	# On l'envoi sur le serveur ftp
 	# On supprime le fichier temporaire
-	# MYSQLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
 	cd /tmp/
-	tar -zcf $nom_du_fichier_de_sauvegarde.tar /tmp/ #et le fichier mysql A MODIFIER
+	mysqldump --user=wpuser --password='dbpassword' --databases wpdb > /tmp/dump-BDD-wordpress
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /etc/nginx/ /tmp/dump-BDD-wordpress
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /tmp/$nom_du_fichier_de_sauvegarde.tar"
 	rm /tmp/$nom_du_fichier_de_sauvegarde.tar
 }
@@ -87,8 +92,7 @@ Restoration()
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
 	mv sauvegarde-1.tar /tmp/sauvegarde-1.tar
 	tar xzf /tmp/sauvegarde-1.tar -C /tmp/
-	cp -r /tmp/ /root/tmp/
-	#on cp les fichiers
+	cp -r /tmp/etc/nginx/ /root/tmp/ #/etc/nginx/ a mettre
 	#on cp mysql
 }
 
