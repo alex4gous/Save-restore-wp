@@ -74,7 +74,7 @@ Sauvegarde()
 
 	cd /tmp/
 	mysqldump --user=wpuser --password='dbpassword' --databases wpdb > /tmp/dump-BDD-wordpress
-	tar -zcf $nom_du_fichier_de_sauvegarde.tar /etc/nginx/ /tmp/dump-BDD-wordpress /var/www/html/ /etc/php/7.0/fpm/php.ini
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /etc/nginx/ /tmp/dump-BDD-wordpress /var/www/html/ /etc/php/7.3/fpm/php.ini
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /tmp/$nom_du_fichier_de_sauvegarde.tar"
 	rm /tmp/$nom_du_fichier_de_sauvegarde.tar
 }
