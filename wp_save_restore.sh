@@ -111,14 +111,14 @@ Restoration()
 	cp -r /tmp/etc/nginx/ /etc/
 	cp -r /tmp/var/www/html/ /var/www/
 	cp -r /tmp/etc/php/7.3/fpm/php.ini /etc/php/7.0/fpm/php.ini
-#	mysql -u wpuser -p dbpassword < dump-BDD-wordpress.sql 
+	mysql -u wpuser -p'dbpassword' < /tmp/tmp/dump-BDD-wordpress
 
 	# change the ownership of the wordpress directory
-#	chown -R www-data:www-data /var/www/html/wordpress
+	chown -R www-data:www-data /var/www/html/wordpress
 
 	# redémarre les services
-#	systemctl restart nginx
-#	systemctl restart php7.3-fpm
+	systemctl restart nginx
+	systemctl restart php7.3-fpm
 }
 
 ###
