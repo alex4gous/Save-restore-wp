@@ -74,7 +74,7 @@ Sauvegarde()
 
 	cd /tmp/
 	mysqldump --user=wpuser --password='dbpassword' --databases wpdb > /tmp/dump-BDD-wordpress
-	tar -zcf $nom_du_fichier_de_sauvegarde.tar /etc/nginx/ /tmp/dump-BDD-wordpress
+	tar -zcf $nom_du_fichier_de_sauvegarde.tar /etc/nginx/ /tmp/dump-BDD-wordpress /var/www/html/ /etc/php/7.0/fpm/php.ini
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; put -O /home/serveurftp/ /tmp/$nom_du_fichier_de_sauvegarde.tar"
 	rm /tmp/$nom_du_fichier_de_sauvegarde.tar
 }
@@ -96,27 +96,29 @@ Restoration()
 	#On installe les paquets pour wordpress
 	apt-get install nginx mariadb-server mariadb-client php-cgi php-common php-fpm php-pear php-mbstring php-zip php-net-socket php-gd php-xml-util php-gettext php-mysql php-bcmath unzip wget git -y
 
-	#On redémarre php
-	systemctl restart php7.3-fpm
+	#On redémarre php et nginx
+	pkill -f nginx
+	systemctl start nginx
+	systemctl restart php7.0-fpm.service
 
 	#Prération mysql
-	mysql -u root -p -e "CREATE DATABASE wpdb; CREATE USER 'wpuser'@'localhost' identified by 'dbpassword'; GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES; EXIT;"
+#	mysql -u root -p -e "CREATE DATABASE wpdb; CREATE USER 'wpuser'@'localhost' identified by 'dbpassword'; GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES; EXIT;"
 
 	## RESTORATION DES FICHIERS DU FTP
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
 	mv sauvegarde-1.tar /tmp/sauvegarde-1.tar
 	tar xzf /tmp/sauvegarde-1.tar -C /tmp/ # a supprimer surement
-	cp -r /tmp/etc/nginx/ /etc/nginx/
-	cp -r /tmp/var/www/html/ /var/www/html/
-	cp -r /tmp/etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini
-	mysql -u wpuser -p dbpassword < dump-BDD-wordpress.sql 
+	cp -r /tmp/etc/nginx/ /etc/
+	cp -r /tmp/var/www/html/ /var/www/
+	cp -r /tmp/etc/php/7.3/fpm/php.ini /etc/php/7.0/fpm/php.ini
+#	mysql -u wpuser -p dbpassword < dump-BDD-wordpress.sql 
 
 	# change the ownership of the wordpress directory
-	chown -R www-data:www-data /var/www/html/wordpress
+#	chown -R www-data:www-data /var/www/html/wordpress
 
 	# redémarre les services
-	systemctl restart nginx
-	systemctl restart php7.3-fpm
+#	systemctl restart nginx
+#	systemctl restart php7.3-fpm
 }
 
 ###
