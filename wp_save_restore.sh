@@ -16,7 +16,7 @@ FTP_PASS="serveurftp"
 
 usage()
 {
-	echo "usage: ./wp_save_restore.sh [OPTIONS] -u [user] -p [pass] -h [hostname]"
+	echo "usage: ./wp_save_restore.sh [OPTIONS] -s -f [IP serveur ftp]"
 	echo "options:"
 	echo "            -r -f [IP du serveur FTP] Pour lancer la restoration" # A MODIFIER
 	echo "            -s -f [IP du serveur FTP] Pour lancer la sauvegarde"
