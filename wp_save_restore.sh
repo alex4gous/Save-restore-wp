@@ -103,8 +103,6 @@ Restoration()
 
 	#Prération mysql
 	mysql -e "CREATE DATABASE wpdb;CREATE USER wpuser@localhost IDENTIFIED BY 'dbpassword';GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost';FLUSH PRIVILEGES;"
-#	mysql -e "CREATE USER wpdb@localhost IDENTIFIED BY 'dbpassword';"
-	#J'ai del la ere request CREATE DATABASE wpdb;
 
 	## RESTORATION DES FICHIERS DU FTP
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
