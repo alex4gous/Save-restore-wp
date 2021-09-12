@@ -99,10 +99,11 @@ Restoration()
 	#On redémarre php et nginx
 	pkill -f nginx
 	systemctl start nginx
-	systemctl restart php7.0-fpm.service
+	systemctl restart php7.3-fpm.service
 
 	#Prération mysql
-#	mysql -u root -p -e "CREATE DATABASE wpdb; CREATE USER 'wpuser'@'localhost' identified by 'dbpassword'; GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES; EXIT;"
+	mysql -e "CREATE USER wpdb@localhost IDENTIFIED BY 'dbpassword';"
+	#J'ai del la ere request CREATE DATABASE wpdb;
 
 	## RESTORATION DES FICHIERS DU FTP
 	lftp -c "open -u $FTP_USER,$FTP_PASS $serveurftp; get /home/serveurftp/sauvegarde-1.tar"
@@ -110,8 +111,13 @@ Restoration()
 	tar xzf /tmp/sauvegarde-1.tar -C /tmp/ # a supprimer surement
 	cp -r /tmp/etc/nginx/ /etc/
 	cp -r /tmp/var/www/html/ /var/www/
-	cp -r /tmp/etc/php/7.3/fpm/php.ini /etc/php/7.0/fpm/php.ini
+	cp -r /tmp/etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini
+
+	#Import BDD
 	mysql -u wpuser -p'dbpassword' < /tmp/tmp/dump-BDD-wordpress
+
+	#fin mysql
+	mysql -e "GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES;"
 
 	# change the ownership of the wordpress directory
 	chown -R www-data:www-data /var/www/html/wordpress
