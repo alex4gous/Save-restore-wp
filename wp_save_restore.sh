@@ -102,7 +102,8 @@ Restoration()
 	systemctl restart php7.3-fpm.service
 
 	#Prération mysql
-	mysql -e "CREATE USER wpdb@localhost IDENTIFIED BY 'dbpassword';"
+	mysql -e "CREATE DATABASE wpdb;CREATE USER wpuser@localhost IDENTIFIED BY 'dbpassword';GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost';FLUSH PRIVILEGES;"
+#	mysql -e "CREATE USER wpdb@localhost IDENTIFIED BY 'dbpassword';"
 	#J'ai del la ere request CREATE DATABASE wpdb;
 
 	## RESTORATION DES FICHIERS DU FTP
@@ -117,7 +118,7 @@ Restoration()
 	mysql -u wpuser -p'dbpassword' < /tmp/tmp/dump-BDD-wordpress
 
 	#fin mysql
-	mysql -e "GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES;"
+#	mysql -e "GRANT ALL PRIVILEGES ON wpdb.* TO 'wpuser'@'localhost'; FLUSH PRIVILEGES;"
 
 	# change the ownership of the wordpress directory
 	chown -R www-data:www-data /var/www/html/wordpress
