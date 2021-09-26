@@ -1,4 +1,4 @@
-#**Ce script sert à sauvegarder et à restaurer un site wordpress via un serveur ftp.**
+# **Ce script sert à sauvegarder et à restaurer un site wordpress via un serveur ftp.**
 
 # Save-restore-wp
 
